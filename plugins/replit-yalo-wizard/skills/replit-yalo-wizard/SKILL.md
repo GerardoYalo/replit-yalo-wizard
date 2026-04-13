@@ -14,54 +14,54 @@ You own this flow. Run commands, create files, push to GitHub. Before starting, 
 
 Before doing anything, tell the user:
 
-"Hola! Voy a guiarte para publicar tu app en Replit. Acá va el resumen de lo que va a pasar:
+"Hey! I'll get your app published on Replit. Here's what's going to happen:
 
-**Lo que hago yo automáticamente ✅**
-- Verificar tu acceso a Replit
-- Crear el proyecto con template Streamlit listo para correr
-- Crear el repo en GitHub y pushear el código
-- Instalar y configurar el Replit CLI
+**What I handle automatically ✅**
+- Verify your Replit access
+- Create your project with a ready-to-run Streamlit template
+- Create the GitHub repo and push your code
+- Install and configure the Replit CLI
 
-**Los 3 pasos donde vas a necesitar el browser 👤**
-1. Login en Replit (una vez, 30 segundos)
-2. Crear el Repl y conectarlo a tu repo de GitHub (una vez, ~2 minutos)
-3. Clickear Deploy la primera vez (una vez, ~1 minuto)
+**The 3 steps where you'll need the browser 👤**
+1. Login to Replit (one time, ~30 seconds)
+2. Create the Repl and connect it to your GitHub repo (one time, ~2 minutes)
+3. Click Deploy for the first time (one time, ~1 minute)
 
-**Después de ese setup inicial, el ciclo es 100% automático:**
-`git push` → Replit actualiza solo → URL pública lista para compartir
+**After that initial setup, the cycle is 100% automatic:**
+`git push` → Replit updates → live URL ready to share
 
-¿Arrancamos?"
+Ready to go?"
 
 ---
 
 ## Phase 1 — Access check
 
 Use AskUserQuestion:
-- question: "¿Ya tenés acceso a Replit en Yalo?"
-- header: "Replit Wizard"
+- question: "Do you have access to Replit under the Yalo workspace?"
+- header: "Replit access"
 - options:
-  - label: "✅ Sí, ya tengo acceso"
-  - label: "❌ No tengo acceso todavía"
-  - label: "🤔 No sé, quiero verificar"
+  - label: "✅ Yes, I have access"
+  - label: "❌ No, I don't have access yet"
+  - label: "🤔 Not sure, let me check"
 - multiSelect: false
 
-### Branch: 🤔 No sé
+### Branch: 🤔 Not sure
 Send link: https://replit.com/t/yalo — ask if they can open it or get an error.
-- Can open → Branch Sí
+- Can open → Branch Yes
 - Error → Branch No
 
 ### Branch: ❌ No
 Ask their full name via AskUserQuestion, then send to #ask-mario via mcp__slack__send_message:
-> "Hi Mario! [NOMBRE] needs access to Replit under the Yalo account. Can you add them? Thanks! 🙏"
+> "Hi Mario! [NAME] needs access to Replit under the Yalo account. Can you add them? Thanks! 🙏"
 
-Tell them: "✅ Le avisé a Mario. Mientras esperás, logueate en replit.com con tu cuenta @yalo.com para preparar tu perfil. Volvé cuando Mario te confirme el acceso."
+Tell them: "✅ I let Mario know. While you wait, log in at replit.com with your @yalo.com Google account to set up your profile. Come back once Mario confirms your access."
 
 **Stop here.**
 
-### Branch: ✅ Sí
+### Branch: ✅ Yes
 Ask them to open https://replit.com/t/yalo and confirm workspace via AskUserQuestion:
-- question: "¿Qué ves arriba a la izquierda?"
-- options: "🟢 Dice 'Yalo'" / "🔴 Dice 'Basic plan'"
+- question: "What do you see in the top-left of the workspace?"
+- options: "🟢 It says 'Yalo'" / "🔴 It says 'Basic plan'"
 - If Basic plan → follow Branch No
 
 Continue to Phase 2.
@@ -71,55 +71,55 @@ Continue to Phase 2.
 ## Phase 2 — Project setup
 
 Use AskUserQuestion:
-- question: "¿Con qué proyecto querés arrancar?"
-- header: "Tu proyecto"
+- question: "What project do you want to work with?"
+- header: "Your project"
 - options:
-  - label: "📁 Tengo un proyecto local"
-  - label: "🆕 Quiero crear uno nuevo"
+  - label: "📁 I have an existing local project"
+  - label: "🆕 I want to create a new one"
 - multiSelect: false
 
-### Branch: 📁 Proyecto local
+### Branch: 📁 Existing local project
 Ask for the path (free text). Run:
 ```bash
 ls <path> && git -C <path> status
 ```
 Confirm the project exists. Note whether it already has git initialized.
 
-### Branch: 🆕 Proyecto nuevo
+### Branch: 🆕 New project
 
 Ask via AskUserQuestion:
-- question: "¿Arrancás desde cero o usás el template de Yalo?"
-- header: "Punto de partida"
+- question: "How do you want to start?"
+- header: "Starting point"
 - options:
-  - label: "🚀 Template Yalo" — description: "Streamlit app funcional, corre al instante"
-  - label: "⚪ Desde cero" — description: "Directorio vacío, vos agregás tus archivos"
+  - label: "🚀 Yalo Streamlit template" — description: "Functional app, runs instantly"
+  - label: "⚪ From scratch" — description: "Empty directory, you add your own files"
 
 Ask for the project name (free text).
 
 **If template:** Copy files from `templates/python-starter/` (path derived from "Base directory for this skill", go up two levels):
 ```bash
-cp -r <plugin-base>/../../templates/python-starter/. <nombre>/
+cp -r <plugin-base>/../../templates/python-starter/. <name>/
 ```
 
 Run to verify:
 ```bash
-cd <nombre> && uv run streamlit run app.py
+cd <name> && uv run streamlit run app.py
 ```
-Confirm it abre en el browser. Cerrá con Ctrl+C.
+Confirm it opens in the browser. Stop with Ctrl+C.
 
-Tell the user: "✅ App corriendo local. Editá `app.py` cuando quieras. Cuando estés listo para publicar, decime **'listo'**."
+Tell the user: "✅ App running locally. Edit `app.py` however you want. When you're ready to publish, just say **'ready'** and I'll push it live."
 
-**If desde cero:** Crear directorio vacío. Agregar `pyproject.toml` mínimo:
+**If from scratch:** Create empty directory. Add a minimal `pyproject.toml`:
 ```toml
 [project]
-name = "<nombre>"
+name = "<name>"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = ["streamlit>=1.35.0"]
 ```
-Y un `app.py` con `import streamlit as st` y `st.title("Mi app")`.
+And a `app.py` with `import streamlit as st` and `st.title("My app")`.
 
-> Para agregar dependencias: `uv add <pkg>` — sin pip, sin freeze.
+> To add dependencies: `uv add <pkg>` — no pip, no freeze needed.
 
 ---
 
@@ -134,15 +134,15 @@ If no remote:
 1. Create repo via mcp__github__create_repository (private: true, name: kebab-case)
 2. Push:
 ```bash
-cd <nombre>
+cd <name>
 git init
 git add .
 git commit -m "init"
-git remote add origin git@github.com:<usuario>/<nombre>.git
+git remote add origin git@github.com:<user>/<name>.git
 git push -u origin main
 ```
 
-Tell the user: "✅ Código en GitHub: `github.com/<usuario>/<nombre>`"
+Tell the user: "✅ Code is on GitHub: `github.com/<user>/<name>`"
 
 ---
 
@@ -153,19 +153,19 @@ Install if missing:
 which replit || npm install -g replit
 ```
 
-**👤 TURNO DEL USUARIO — Login (30 seg)**
+**👤 YOUR TURN — Login (~30 seconds)**
 
-Tell them: "Ahora necesito que hagas login en Replit. Voy a abrir el browser — completá el login con tu cuenta @yalo.com y volvé acá."
+Tell them: "I need you to log in to Replit. I'll open the browser — complete the login with your @yalo.com account and come back here."
 
 ```bash
 replit auth
 ```
 
 Wait via AskUserQuestion:
-- question: "¿Completaste el login en el browser?"
+- question: "Did you complete the login in the browser?"
 - header: "Replit auth"
 - options:
-  - label: "✅ Listo, hice login"
+  - label: "✅ Done, I'm logged in"
 
 ---
 
@@ -195,47 +195,47 @@ git add .replit && git commit -m "Add Replit config" && git push
 
 ## Phase 6 — Create Repl + connect GitHub
 
-**👤 TURNO DEL USUARIO — 2 pasos en el browser (~2 min)**
+**👤 YOUR TURN — 2 steps in the browser (~2 minutes)**
 
 Tell them:
 
-"Necesito que hagas 2 cosas en el browser de Replit — tarda 2 minutos y es la última vez que vas a tocar la GUI:
+"Two quick things in the Replit browser — this is the last time you'll need to touch the GUI:
 
-**Paso 1 — Crear el Repl:**
-1. Ir a https://replit.com/t/yalo
+**Step 1 — Create the Repl:**
+1. Go to https://replit.com/t/yalo
 2. Click **'+ Create Repl'**
-3. Elegir **'Import from GitHub'**
-4. Seleccionar el repo `<nombre>`
+3. Choose **'Import from GitHub'**
+4. Select the repo `<name>`
 5. Click **'Import'**
 
-**Paso 2 — Activar auto-sync:**
-1. Dentro del Repl → **Settings**
-2. Sección **Git** → activar **'Auto-pull on push'**
+**Step 2 — Enable auto-sync:**
+1. Inside the Repl → **Settings**
+2. Under **Git** → enable **'Auto-pull on push'**
 
-Cuando termines, volvé acá."
+Come back when you're done."
 
 Wait via AskUserQuestion:
-- question: "¿Creaste el Repl y activaste el auto-sync?"
-- header: "Setup Replit"
+- question: "Did you create the Repl and enable auto-sync?"
+- header: "Replit setup"
 - options:
-  - label: "✅ Listo"
+  - label: "✅ Done"
 
 ---
 
 ## Phase 7 — First deploy
 
-**👤 TURNO DEL USUARIO — Deploy inicial (~1 min)**
+**👤 YOUR TURN — First deploy (~1 minute)**
 
 Tell them:
 
-"Último paso manual — después de esto todo es automático:
+"Last manual step — after this everything is automatic:
 
-1. Dentro de tu Repl → click **'Deploy'** (arriba a la derecha)
-2. Elegir **'Autoscale'**
-3. Click **'Deploy'** → esperar que termine (~1 min)
-4. **Copiar la URL pública** que aparece al final
+1. Inside your Repl → click **'Deploy'** (top right)
+2. Choose **'Autoscale'**
+3. Click **'Deploy'** → wait for it to finish (~1 min)
+4. **Copy the public URL** that appears at the end
 
-Pegame la URL cuando la tengas."
+Paste the URL here when you have it."
 
 Save the URL to `.replit-url`:
 ```bash
@@ -250,15 +250,15 @@ git add .gitignore && git commit -m "Save Replit URL" && git push
 
 Tell them:
 
-"🚀 **Todo listo.**
+"🚀 **You're all set.**
 
-🔗 Tu app: `<URL>`
+🔗 Your app: `<URL>`
 
-**De ahora en adelante:**
-- Editá `app.py` como quieras
-- Cuando estés listo para publicar → decime **'listo'** o usá `/replit-deploy`
-- Yo me encargo del `git push` y te devuelvo el link actualizado
+**From now on:**
+- Edit `app.py` however you want
+- When you're ready to publish → just say **'ready'** or run `/replit-deploy`
+- I'll handle the push and give you the updated link
 
-Proyectos de Yalo para inspirarte:
+Yalo projects to inspire you:
 - 📦 Use case hub: https://yalo-use-case-hub.replit.app
 - 📊 Flows KPI: https://yaloFlowsKPIdata.replit.app"

@@ -1,8 +1,8 @@
 import streamlit as st
 
-st.title("🚀 Mi app en Replit")
-st.write("Editá este archivo y publicalo con un push.")
+st.title("🚀 My app on Replit")
+st.write("Edit this file and publish it with a push.")
 
-nombre = st.text_input("¿Cómo te llamás?")
-if nombre:
-    st.success(f"Hola, {nombre}! Tu app está viva 🎉")
+name = st.text_input("What's your name?")
+if name:
+    st.success(f"Hey, {name}! Your app is live 🎉")

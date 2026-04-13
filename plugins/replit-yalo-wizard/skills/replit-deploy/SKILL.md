@@ -1,7 +1,7 @@
 ---
 name: replit-deploy
-description: Deploy the current project to Replit and return the live URL. Invoke when the user says they are ready to publish, share, or deploy to Replit (e.g. "listo", "publicar", "deployar", "subir a Replit").
-allowed-tools: Bash Read
+description: Deploy the current project to Replit and return the live URL. Invoke when the user says they are ready to publish, share, or deploy to Replit (e.g. "ready", "deploy", "publish", "ship", "listo", "publicar").
+allowed-tools: Bash Read AskUserQuestion
 ---
 
 # replit-deploy
@@ -29,16 +29,15 @@ Confirm push succeeded.
 
 3. **Get the Replit URL:**
 
-Run:
 ```bash
 cat .replit-url 2>/dev/null || echo "NOT_SET"
 ```
 
-If the file exists, read the URL from it and show it to the user.
+If the file exists, use that URL.
 
 If NOT_SET, ask via AskUserQuestion:
-- question: "¿Cuál es la URL de tu Repl? La encontrás en la barra del browser cuando abrís tu Repl."
-- header: "URL de Replit"
+- question: "What's your Replit app URL? You can find it in the browser bar when you open your Repl."
+- header: "Replit URL"
 
 Save it for next time:
 ```bash
@@ -49,8 +48,8 @@ echo ".replit-url" >> .gitignore
 4. **Confirm deploy:**
 
 Tell the user:
-"🚀 **Tu app está publicada.**
+"🚀 **Your app is live.**
 
-🔗 **[Abrir app](<URL>)**
+🔗 **[Open app](<URL>)**
 
-Replit autopull el último push — en ~30 segundos debería estar actualizada. Compartí ese link con quien quieras."
+Replit autopulls on push — it should be updated in ~30 seconds. Share that link with anyone."
