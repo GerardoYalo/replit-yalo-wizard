@@ -76,5 +76,47 @@ While they wait, tell them:
    - 📦 Use case hub: https://yalo-use-case-hub.replit.app
    - 📊 Flows KPI data: https://yaloFlowsKPIdata.replit.app
 
-5. Close with:
+5. **Set up Replit CLI** — ask if they want to work desde la terminal en vez de la GUI:
+
+   Use AskUserQuestion:
+   - question: "¿Querés configurar el CLI de Replit para trabajar desde tu terminal?"
+   - header: "Replit CLI"
+   - options:
+     - label: "🖥️ Sí, quiero usar CLI"
+     - label: "🖱️ No, por ahora uso la GUI"
+   - multiSelect: false
+
+   If "Sí, quiero usar CLI" → guide them:
+
+   **a) Instalar el CLI:**
+   ```bash
+   npm install -g replit
+   ```
+
+   **b) Autenticarse:**
+   ```bash
+   replit auth
+   ```
+   (Abre el browser para login con su cuenta @yalo.com)
+
+   **c) Vincular su proyecto local al Repl:**
+   ```bash
+   cd mi-proyecto
+   replit local
+   ```
+   (Seleccionan el Repl del workspace de Yalo)
+
+   **d) Comandos útiles del día a día:**
+   - `replit run` — corre el Repl desde la terminal
+   - `replit cp ./archivo.py :~/archivo.py` — sube un archivo al Repl
+   - `replit exec "python main.py"` — ejecuta un comando en el Repl
+   - `replit bash` — abre shell directo en el Repl
+
+   **e) Para deployments** — el deploy sigue siendo desde la GUI por ahora, pero se puede automatizar conectando GitHub:
+   - En el Repl → Settings → Git → conectar el repo de GitHub
+   - Cada `git push` a main → Replit autopull y redeploya
+
+   If "No, por ahora uso la GUI" → skip CLI setup.
+
+6. Close with:
    "¡Listo! Ya sos parte del workspace de Yalo en Replit 🎉 Si tenés dudas, podés buscar proyectos del equipo directamente desde el workspace."
