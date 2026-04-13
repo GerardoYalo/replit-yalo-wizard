@@ -68,15 +68,8 @@ Ask two things via AskUserQuestion (can be two separate questions):
 **1. ¿Arrancás desde cero o usás un template?**
 - header: "Punto de partida"
 - options:
-  - label: "🚀 Usar template Yalo" — description: "App funcional lista para deployar en segundos"
+  - label: "🚀 Usar template Yalo" — description: "Flask app funcional lista para deployar en segundos"
   - label: "⚪ Desde cero" — description: "Directorio vacío, yo agrego mis propios archivos"
-
-**2. ¿Qué stack?**
-- header: "Stack"
-- options:
-  - label: "🐍 Python"
-  - label: "🟢 Node.js"
-  - label: "🌐 Estático (HTML)"
 
 Ask for the project name via AskUserQuestion (free text).
 
@@ -85,22 +78,26 @@ Run via Bash:
 mkdir <nombre> && cd <nombre>
 ```
 
-**If template:** Copy the template files from the plugin's `templates/` directory into the project:
+**If template:** Copy the Python template files from the plugin's `templates/python-starter/` directory into the project.
 
-The plugin templates live at the path shown in "Base directory for this skill" — go up two levels to find `templates/`.
+The plugin templates path is derived from "Base directory for this skill" — go up two levels to find `templates/python-starter/`.
 
-- Python → copy `templates/python-starter/` contents
-- Node.js → copy `templates/node-starter/` contents
-- Static → copy `templates/static-starter/` contents
+```bash
+cp <plugin-base>/../../templates/python-starter/* <nombre>/
+cp <plugin-base>/../../templates/python-starter/.replit <nombre>/
+```
 
 Run locally to verify it works:
-- Python: `cd <nombre> && pip install -r requirements.txt -q && python main.py &` — confirm it responds on port 8080
-- Node.js: `cd <nombre> && npm install && npm start &` — confirm it responds on port 8080
-- Static: just confirm `index.html` exists
+```bash
+cd <nombre> && uv run main.py
+```
+Confirm it responds on port 8080, then stop the process.
 
-Tell the user: "✅ Template listo. Podés iterarlo como quieras. Cuando estés listo para publicar, decime **'listo'** y lo subo a Replit."
+Tell the user: "✅ Template Python listo. Iterá lo que quieras. Cuando estés listo para publicar, decime **'listo'** y lo subo a Replit."
 
 **If desde cero:** Create empty directory. The user will add their own files.
+
+> **Note:** Todo es Python con `uv`. Para agregar dependencias: `uv add <pkg>` — actualiza `pyproject.toml` automáticamente, sin pip freeze.
 
 ---
 

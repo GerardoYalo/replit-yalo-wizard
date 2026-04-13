@@ -1,9 +1,10 @@
-run = "pip install -r requirements.txt -q && python main.py"
+run = "uv run main.py"
 entrypoint = "main.py"
 
 [nix]
 channel = "stable-24_05"
+packages = ["uv"]
 
 [deployment]
-run = ["sh", "-c", "pip install -r requirements.txt -q && python main.py"]
+run = ["sh", "-c", "uv run main.py"]
 deploymentTarget = "autoscale"

@@ -1,6 +1,0 @@
-run = "echo 'Static site ready'"
-entrypoint = "index.html"
-
-[deployment]
-deploymentTarget = "static"
-publicDir = "."
