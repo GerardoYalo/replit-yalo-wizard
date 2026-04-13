@@ -89,9 +89,9 @@ cp <plugin-base>/../../templates/python-starter/.replit <nombre>/
 
 Run locally to verify it works:
 ```bash
-cd <nombre> && uv run main.py
+cd <nombre> && uv run streamlit run app.py
 ```
-Confirm it responds on port 8080, then stop the process.
+Streamlit abre automáticamente en el browser. Confirmá que carga, luego cerrá con Ctrl+C.
 
 Tell the user: "✅ Template Python listo. Iterá lo que quieras. Cuando estés listo para publicar, decime **'listo'** y lo subo a Replit."
 

@@ -1,7 +1,7 @@
 {
   "name": "replit-yalo-wizard",
   "description": "Onboard any Yalo employee to Replit — handles access request automatically",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "author": {
     "name": "Gerardo Yalo",
     "email": "gerardo@yalo.com"

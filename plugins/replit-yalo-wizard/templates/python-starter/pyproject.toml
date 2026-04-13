@@ -3,5 +3,5 @@ name = "yalo-starter"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-    "flask>=3.0.3",
+    "streamlit>=1.35.0",
 ]
