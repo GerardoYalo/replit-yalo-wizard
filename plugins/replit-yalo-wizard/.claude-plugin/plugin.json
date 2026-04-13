@@ -1,0 +1,17 @@
+{
+  "name": "replit-yalo-wizard",
+  "description": "Onboard any Yalo employee to Replit — handles access request automatically",
+  "version": "1.0.0",
+  "author": {
+    "name": "Gerardo Yalo",
+    "email": "gerardo@yalo.com"
+  },
+  "repository": "https://github.com/GerardoYalo/replit-yalo-wizard",
+  "license": "MIT",
+  "keywords": [
+    "replit",
+    "onboarding",
+    "yalo",
+    "slack"
+  ]
+}

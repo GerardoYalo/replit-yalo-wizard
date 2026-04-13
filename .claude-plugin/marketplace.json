@@ -1,0 +1,19 @@
+{
+  "name": "yalo-replit",
+  "owner": {
+    "name": "Gerardo Yalo",
+    "email": "gerardo@yalo.com"
+  },
+  "metadata": {
+    "description": "Yalo's Replit onboarding plugin marketplace",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "replit-yalo-wizard",
+      "source": "./plugins/replit-yalo-wizard",
+      "description": "Onboard any Yalo employee to Replit — handles access request automatically",
+      "version": "1.0.0"
+    }
+  ]
+}
