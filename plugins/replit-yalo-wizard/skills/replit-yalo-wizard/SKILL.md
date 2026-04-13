@@ -56,35 +56,51 @@ Ask for the path via AskUserQuestion (free text).
 
 Run via Bash:
 ```bash
-cd <path>
-ls
+ls <path>
+git -C <path> status
 ```
-Confirm the project exists. Check if it already has git:
-```bash
-git status
-```
+Confirm the project exists and note whether it already has git.
 
 ### Branch: 🆕 Proyecto nuevo
-Ask for the project name via AskUserQuestion.
+
+Ask two things via AskUserQuestion (can be two separate questions):
+
+**1. ¿Arrancás desde cero o usás un template?**
+- header: "Punto de partida"
+- options:
+  - label: "🚀 Usar template Yalo" — description: "App funcional lista para deployar en segundos"
+  - label: "⚪ Desde cero" — description: "Directorio vacío, yo agrego mis propios archivos"
+
+**2. ¿Qué stack?**
+- header: "Stack"
+- options:
+  - label: "🐍 Python"
+  - label: "🟢 Node.js"
+  - label: "🌐 Estático (HTML)"
+
+Ask for the project name via AskUserQuestion (free text).
 
 Run via Bash:
 ```bash
 mkdir <nombre> && cd <nombre>
 ```
 
-Use AskUserQuestion to pick template:
-- question: "¿Qué tipo de proyecto?"
-- header: "Template"
-- options:
-  - label: "🐍 Python"
-  - label: "🟢 Node.js"
-  - label: "🌐 HTML/CSS/JS estático"
-- multiSelect: false
+**If template:** Copy the template files from the plugin's `templates/` directory into the project:
 
-Create the appropriate starter files with Write:
-- Python: `main.py` with `print("Hello from Yalo!")`
-- Node.js: `index.js` with `console.log("Hello from Yalo!")`
-- Static: `index.html` with basic HTML scaffold
+The plugin templates live at the path shown in "Base directory for this skill" — go up two levels to find `templates/`.
+
+- Python → copy `templates/python-starter/` contents
+- Node.js → copy `templates/node-starter/` contents
+- Static → copy `templates/static-starter/` contents
+
+Run locally to verify it works:
+- Python: `cd <nombre> && pip install -r requirements.txt -q && python main.py &` — confirm it responds on port 8080
+- Node.js: `cd <nombre> && npm install && npm start &` — confirm it responds on port 8080
+- Static: just confirm `index.html` exists
+
+Tell the user: "✅ Template listo. Podés iterarlo como quieras. Cuando estés listo para publicar, decime **'listo'** y lo subo a Replit."
+
+**If desde cero:** Create empty directory. The user will add their own files.
 
 ---
 
