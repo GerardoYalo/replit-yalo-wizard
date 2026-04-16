@@ -45,11 +45,21 @@ echo "<URL>" > .replit-url
 echo ".replit-url" >> .gitignore
 ```
 
-4. **Confirm deploy:**
+4. **Tell the user to redeploy:**
 
 Tell the user:
-"🚀 **Your app is live.**
+"✅ **Code pushed.** Replit has the latest version in your workspace.
 
-🔗 **[Open app](<URL>)**
+👤 **One last click** — go to your Repl → click **'Redeploy'** (top right) to update the live app.
 
-Replit autopulls on push — it should be updated in ~30 seconds. Share that link with anyone."
+🔗 Your app: `<URL>`"
+
+Wait via AskUserQuestion:
+- question: "Did you click Redeploy?"
+- header: "Redeploy"
+- options:
+  - label: "✅ Done, app is updated"
+  - label: "⏳ Having trouble"
+
+If done, tell them:
+"🚀 **Live and updated.** Share the link with anyone."
