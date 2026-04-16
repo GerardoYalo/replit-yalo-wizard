@@ -104,11 +104,15 @@ cp -r <plugin-base>/../../templates/python-starter/. <name>/
 
 Run to verify:
 ```bash
-cd <name> && uv run streamlit run app.py
+cd <name> && uv run streamlit run app.py --server.headless true
 ```
-Confirm it opens in the browser. Stop with Ctrl+C.
 
-Tell the user: "✅ App running locally."
+Tell the user exactly where to go:
+"✅ App running locally.
+
+👉 **Open this in your browser:** http://localhost:8501
+
+You should see your Streamlit app. Take a look and come back."
 
 **If from scratch:** Create empty directory. Add a minimal `pyproject.toml`:
 ```toml
@@ -141,7 +145,7 @@ Based on their answer, help them build it:
 - Write the `app.py` code for them
 - Add dependencies with `uv add <pkg>`
 - If they need data (BQ, CSV, API), help them export/connect it
-- Run locally with `uv run streamlit run app.py` to preview
+- Run locally with `uv run streamlit run app.py --server.headless true` and tell the user: "👉 Open http://localhost:8501 in your browser to see the changes."
 - Iterate: ask if they like it, what to change, what to add
 - Keep going until they say they're happy
 
