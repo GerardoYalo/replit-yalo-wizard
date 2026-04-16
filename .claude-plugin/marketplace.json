@@ -10,10 +10,10 @@
   },
   "plugins": [
     {
-      "name": "replit-yalo-wizard",
-      "source": "./plugins/replit-yalo-wizard",
+      "name": "yalo-replit",
+      "source": "./plugins/yalo-replit",
       "description": "Onboard any Yalo employee to Replit — handles access request automatically",
-      "version": "2.2.0"
+      "version": "3.0.0"
     }
   ]
 }
