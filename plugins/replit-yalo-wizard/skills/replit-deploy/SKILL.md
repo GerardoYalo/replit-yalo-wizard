@@ -18,10 +18,11 @@ git diff --stat HEAD
 
 If nothing new to commit, skip to step 3.
 
-2. **Commit and push:**
+2. **Commit and push** (always pull first — Replit may have pushed config changes):
 ```bash
 git add .
 git commit -m "deploy: ready to share"
+git pull --rebase origin main
 git push
 ```
 
