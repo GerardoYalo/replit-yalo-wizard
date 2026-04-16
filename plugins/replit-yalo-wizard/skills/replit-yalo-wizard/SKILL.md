@@ -161,7 +161,16 @@ When they choose "Looks great, let's publish" → continue to Phase 3.
 
 ---
 
-## Phase 3 — GitHub repo
+## Phase 3 — Publish to Replit
+
+Ask via AskUserQuestion:
+- question: "Do you have a GitHub account?"
+- header: "GitHub"
+- options:
+  - label: "✅ Yes, I use GitHub"
+  - label: "❌ No GitHub account"
+
+### Branch: ✅ Yes — GitHub flow
 
 Check:
 ```bash
@@ -182,9 +191,40 @@ git push -u origin main
 
 Tell the user: "✅ Code is on GitHub: `github.com/<user>/<name>`"
 
+Continue to Phase 4 (Replit CLI).
+
+### Branch: ❌ No GitHub — ZIP flow
+
+Create a zip of the project:
+```bash
+cd <name> && zip -r ../<name>.zip . -x '.venv/*' '__pycache__/*' '.git/*'
+```
+
+Tell the user exactly:
+"✅ I created a zip file of your project.
+
+👤 **Upload it to Replit:**
+1. Go to **https://replit.com/import**
+2. Click **'Upload a .zip file'**
+3. Upload the file at: `<absolute-path-to-zip>`
+4. Click **'Import'**
+
+Your app will be running on Replit in about a minute."
+
+Wait via AskUserQuestion:
+- question: "Did you import the zip on Replit?"
+- header: "Replit import"
+- options:
+  - label: "✅ Done, it's running"
+  - label: "⏳ Having trouble"
+
+If done → skip Phase 4, 5, 6. Go directly to Phase 7 (first deploy).
+
+> **Note:** Without GitHub, updates require re-uploading a new zip or copy-pasting changed files. Tell the user: "For future updates, you can drag & drop changed files into the Files pane in Replit, or re-upload a new zip."
+
 ---
 
-## Phase 4 — Replit CLI
+## Phase 4 — Replit CLI (GitHub flow only)
 
 Install if missing:
 ```bash
