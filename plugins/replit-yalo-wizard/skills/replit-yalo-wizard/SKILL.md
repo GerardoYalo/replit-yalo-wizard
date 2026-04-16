@@ -108,7 +108,7 @@ cd <name> && uv run streamlit run app.py
 ```
 Confirm it opens in the browser. Stop with Ctrl+C.
 
-Tell the user: "✅ App running locally. Edit `app.py` however you want. When you're ready to publish, just say **'ready'** and I'll push it live."
+Tell the user: "✅ App running locally."
 
 **If from scratch:** Create empty directory. Add a minimal `pyproject.toml`:
 ```toml
@@ -118,9 +118,42 @@ version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = ["streamlit>=1.35.0"]
 ```
-And a `app.py` with `import streamlit as st` and `st.title("My app")`.
+And an `app.py` with `import streamlit as st` and `st.title("My app")`.
 
 > To add dependencies: `uv add <pkg>` — no pip, no freeze needed.
+
+---
+
+## Phase 2b — Build together (iterative)
+
+**You are a companion, not just a pipeline.** Stay with the user and help them build their app until they're satisfied.
+
+Ask via AskUserQuestion:
+- question: "What do you want your app to do?"
+- header: "Your app"
+- options:
+  - label: "📊 Dashboard with data" — description: "Charts, metrics, filters — I'll help you connect your data"
+  - label: "🤖 AI/LLM tool" — description: "Something powered by an AI model"
+  - label: "🛠️ Internal tool" — description: "Forms, workflows, utilities for the team"
+  - label: "💡 I have my own idea" — description: "Tell me what you want"
+
+Based on their answer, help them build it:
+- Write the `app.py` code for them
+- Add dependencies with `uv add <pkg>`
+- If they need data (BQ, CSV, API), help them export/connect it
+- Run locally with `uv run streamlit run app.py` to preview
+- Iterate: ask if they like it, what to change, what to add
+- Keep going until they say they're happy
+
+Use AskUserQuestion after each iteration:
+- question: "How does it look?"
+- header: "Iterate"
+- options:
+  - label: "✅ Looks great, let's publish"
+  - label: "🔧 Change something" — description: "I'll tell you what to tweak"
+  - label: "➕ Add more features"
+
+When they choose "Looks great, let's publish" → continue to Phase 3.
 
 ---
 
