@@ -22,10 +22,11 @@ Before doing anything, tell the user:
 - Create the GitHub repo and push your code
 - Install and configure the Replit CLI
 
-**The 3 steps where you'll need the browser 👤**
-1. Login to Replit (one time, ~30 seconds)
-2. Create the Repl and connect it to your GitHub repo (one time, ~2 minutes)
-3. Click Deploy for the first time (one time, ~1 minute)
+**The 2 steps where you'll need the browser 👤**
+1. Create the Repl and connect it to your GitHub repo (one time, ~2 minutes)
+2. Click Deploy for the first time (one time, ~1 minute)
+
+I'll handle the Replit login for you — just complete it when the browser pops up.
 
 **After that initial setup, the cycle is 100% automatic:**
 `git push` → Replit updates → live URL ready to share
@@ -153,19 +154,21 @@ Install if missing:
 which replit || npm install -g replit
 ```
 
-**👤 YOUR TURN — Login (~30 seconds)**
+Tell the user: "I'm opening the Replit login — a browser window will pop up. Just complete the login with your @yalo.com account."
 
-Tell them: "I need you to log in to Replit. I'll open the browser — complete the login with your @yalo.com account and come back here."
-
+Run it directly:
 ```bash
 replit auth
 ```
+
+Then ask:
 
 Wait via AskUserQuestion:
 - question: "Did you complete the login in the browser?"
 - header: "Replit auth"
 - options:
   - label: "✅ Done, I'm logged in"
+  - label: "⏳ Having trouble"
 
 ---
 
