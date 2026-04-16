@@ -1,9 +1,6 @@
 run = "uv sync && uv run streamlit run app.py --server.port 8080 --server.address 0.0.0.0 --server.headless true"
 entrypoint = "app.py"
 
-[nix]
-channel = "stable-24_05"
-
 [deployment]
 run = ["sh", "-c", "uv sync && uv run streamlit run app.py --server.port 8080 --server.address 0.0.0.0 --server.headless true"]
 deploymentTarget = "autoscale"

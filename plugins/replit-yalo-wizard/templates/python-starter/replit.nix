@@ -1,12 +1,12 @@
-{ pkgs }: {
-  deps = [
-    pkgs.uv
-    pkgs.python311
+{ pkgs }:
+pkgs.mkShell {
+  buildInputs = [
+    pkgs.python311Full
+    pkgs.gcc
     pkgs.stdenv.cc.cc.lib
+    pkgs.uv
   ];
-  env = {
-    LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
-      pkgs.stdenv.cc.cc.lib
-    ];
-  };
+  shellHook = ''
+    export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
+  '';
 }
