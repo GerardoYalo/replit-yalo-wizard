@@ -1,63 +1,93 @@
-# replit-yalo-wizard
+# yalo-replit
 
-A Claude Code plugin that onboards any Yalo employee to Replit automatically.
+A Claude Code plugin that takes any Yalo employee from zero to a live Streamlit app on Replit — access check, GitHub repo, Replit config, deploy pipeline. All in one command.
 
-## What it does
+> From local to live in ~5 minutes. The wizard stays with you through the whole build, not just the setup.
 
-Invoke `/replit-yalo-wizard` in Claude Code and it will:
+## Install
 
-1. Show a **native dropdown** asking if you already have Replit access
-2. Based on your answer, it will:
-   - **✅ Already have access** — verify you're in the Yalo workspace, then guide you to create your first project
-   - **❌ No access yet** — ask your name and automatically send a message to Mario in `#ask-mario` on Slack
-   - **🤔 Not sure** — send you the workspace link and branch based on what you find
-
-## Installation
-
-From inside your Claude Code session, run:
-
-```bash
-/plugin install /path/to/replit-yalo-wizard
-```
-
-Or if published to the marketplace:
-
-```bash
-/plugin marketplace add yalochat/claude-plugins
-/plugin install replit-yalo-wizard@yalo-plugins
-```
-
-## Usage
+From inside Claude Code:
 
 ```
-/replit-yalo-wizard
+/plugin marketplace add GerardoYalo/replit-yalo-wizard
+/plugin                  # select and enable yalo-replit
+/reload-plugins
 ```
 
-That's it. The wizard handles everything from there.
+## Skills
 
-## Requirements
+| Command | What it does |
+|---------|--------------|
+| `/yalo-replit:wizard` | End-to-end onboarding — access check, project setup, build-together, GitHub, Replit config, first deploy |
+| `/yalo-replit:deploy` | Commit + push + tell you to click Redeploy. Triggered by "ready", "deploy", "publish", "ship" |
 
-- Claude Code with the Slack MCP server configured (included in `plugin.json`)
-- Slack authentication to send messages to `#ask-mario`
+## The 7 phases
+
+| # | Phase | Who does it |
+|---|-------|-------------|
+| 1 | Access check → Slack message to Mario if needed | 🤖 Agent |
+| 2 | Project setup — template or from scratch | 🤖 Agent |
+| 2c | Looker MCP setup (only for data dashboards) | 🤖 Agent |
+| 3 | Build together — write code, iterate, preview | 🤖 Agent + 🧑 You |
+| 4 | GitHub repo (or ZIP for users without GitHub) | 🤖 Agent |
+| 5 | Replit config injection (`.replit` + `replit.nix`) | 🤖 Agent |
+| 6 | Import into Replit | 🧑 You (browser) |
+| 7 | Click Deploy | 🧑 You (browser) |
+
+After that, the cycle is: edit → say "ready" → `/yalo-replit:deploy` → click Redeploy → live.
+
+## Data: Looker MCP (not BigQuery)
+
+If your app needs data, the wizard routes through the **Looker MCP connector**, never direct BigQuery:
+
+- Governed semantic layer — no raw SQL scattered around
+- No service account keys ending up in a public Repl
+- One-time credentials setup guided by Phase 2c
+
+Setup instructions live in [Notion](https://www.notion.so/yalo/How-to-Set-Up-Looker-Analytics-in-Claude-Cowork-325d53382b23812496b5ef272fb4c26d).
+
+## Template: Python + Streamlit + uv
+
+New projects get a Streamlit starter:
+- `app.py` — minimal functional app
+- `pyproject.toml` — `uv`-managed dependencies (no pip, no requirements.txt)
+- `.replit` + `replit.nix` — Replit-native config that works out of the box on Replit's Nix environment (Python 3.11, libstdc++ for numpy/pandas, autoscale deployment)
+
+## Two paths to Replit
+
+- **With GitHub:** agent creates the repo, pushes, you import from GitHub in Replit. Updates are `git push` + Redeploy.
+- **Without GitHub:** agent packs a ZIP, you upload at `replit.com/import`. Updates are drag & drop.
 
 ## Project structure
 
 ```
 replit-yalo-wizard/
 ├── .claude-plugin/
-│   └── plugin.json          # Plugin metadata + Slack MCP config
-├── skills/
-│   └── replit-yalo-wizard/
-│       └── SKILL.md         # Main skill: dropdown + branching + Slack
+│   └── marketplace.json              # Marketplace metadata
+├── plugins/
+│   └── yalo-replit/
+│       ├── .claude-plugin/
+│       │   └── plugin.json           # Plugin metadata
+│       ├── skills/
+│       │   ├── wizard/SKILL.md       # Main onboarding flow
+│       │   └── deploy/SKILL.md       # Push + redeploy cycle
+│       └── templates/
+│           └── python-starter/       # Streamlit + uv + Replit config
+├── slides/                           # AI Friday presentation (Slidev)
+├── docs/
 └── README.md
 ```
 
 ## Contributing
 
-1. Edit `skills/replit-yalo-wizard/SKILL.md` to change wizard behavior
-2. Edit `.claude-plugin/plugin.json` to add/modify MCP servers
-3. Test locally with `/replit-yalo-wizard` in Claude Code
+1. Edit the skills in `plugins/yalo-replit/skills/*/SKILL.md`
+2. Edit the starter template in `plugins/yalo-replit/templates/python-starter/`
+3. Bump the version in both `.claude-plugin/marketplace.json` and `plugins/yalo-replit/.claude-plugin/plugin.json`
+4. Test locally: `/plugin update yalo-replit && /reload-plugins`
 
-## Ticket
+## Links
 
-Linear: YI-3728
+- **AI Friday slides:** `slides/replit-yalo-wizard.pdf`
+- **Linear ticket:** [YI-3728](https://linear.app/yalo/issue/YI-3728)
+- **Replit workspace:** https://replit.com/t/yalo
+- **Need access?** Ping Mario in `#ask-mario`
