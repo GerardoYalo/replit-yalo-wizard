@@ -153,6 +153,16 @@ css: unocss
     font-size: 0.75rem;
     margin-left: 8px;
   }
+  .tag-gate {
+    display: inline-block;
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    margin-left: 8px;
+    font-weight: 600;
+  }
   table {
     width: 100%;
     border-collapse: separate;
@@ -267,15 +277,16 @@ css: unocss
 ---
 
 <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>The <span class="grad">7 Phases</span></h1>
+  <h1>The <span class="grad">8 Phases</span></h1>
   <br>
   <div class="phase-row"><span class="phase-num">1</span> Access check → Slack to Mario if needed <span class="tag-auto">auto</span></div>
   <div class="phase-row"><span class="phase-num">2</span> Project setup — template or from scratch <span class="tag-auto">auto</span></div>
   <div class="phase-row"><span class="phase-num">3</span> Build together — iterate until happy <span class="tag-auto">auto</span></div>
-  <div class="phase-row"><span class="phase-num">4</span> GitHub repo or ZIP for non-GitHub users <span class="tag-auto">auto</span></div>
-  <div class="phase-row"><span class="phase-num">5</span> Replit config (.replit + replit.nix) <span class="tag-auto">auto</span></div>
-  <div class="phase-row"><span class="phase-num">6</span> Import to Replit <span class="tag-manual">browser</span></div>
-  <div class="phase-row"><span class="phase-num">7</span> Click Deploy <span class="tag-manual">browser</span></div>
+  <div class="phase-row"><span class="phase-num">4</span> Looker MCP setup — connector + skill install <span class="tag-auto">auto</span> <span class="tag-gate">mandatory if data</span></div>
+  <div class="phase-row"><span class="phase-num">5</span> GitHub repo or ZIP for non-GitHub users <span class="tag-auto">auto</span></div>
+  <div class="phase-row"><span class="phase-num">6</span> Replit config (.replit + replit.nix) <span class="tag-auto">auto</span></div>
+  <div class="phase-row"><span class="phase-num">7</span> Import to Replit <span class="tag-manual">browser</span></div>
+  <div class="phase-row"><span class="phase-num">8</span> Click Deploy <span class="tag-manual">browser</span></div>
 </div>
 
 ---
@@ -289,6 +300,7 @@ css: unocss
       <div style="font-size:2rem;">📊</div>
       <h3 style="margin-top:0.8rem;">Dashboard</h3>
       <p style="font-size:0.9rem;">Charts, metrics, filters</p>
+      <p style="font-size:0.75rem; color:#F59E0B; margin-top:0.6rem; font-weight:600;">Data via Looker MCP · never BQ</p>
     </div>
     <div class="card" style="text-align:center; padding:2rem 1rem;">
       <div style="font-size:2rem;">🤖</div>
@@ -307,6 +319,30 @@ css: unocss
     </div>
   </div>
   <p style="margin-top:1.5rem;">Iterate: write code → preview → tweak → repeat → "looks great, let's publish"</p>
+</div>
+
+---
+
+<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
+  <h1>Data Policy — <span class="grad">Mandatory</span></h1>
+  <p style="font-size:1.2rem; margin:1.5rem 0 2rem;">All data flows through the Looker MCP. No direct BigQuery — ever.</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+    <div class="card" style="border-color: rgba(16, 185, 129, 0.4);">
+      <h3 style="color:#10B981;">✅ Do</h3>
+      <p><code>mcp__looker-mcp-toolbox__*</code> at build time</p>
+      <p><code>looker_sdk</code> + Replit Secrets for live runtime</p>
+      <p>CSV snapshots exported via Looker MCP</p>
+      <p>Static sources (external APIs, CSVs)</p>
+    </div>
+    <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
+      <h3 style="color:#EF4444;">🚫 Don't</h3>
+      <p><code>bq query</code> or the <code>bq</code> CLI</p>
+      <p><code>google-cloud-bigquery</code> SDK</p>
+      <p>Any direct BigQuery client</p>
+      <p>Hardcoded credentials in <code>app.py</code></p>
+    </div>
+  </div>
+  <p style="margin-top:1.5rem; font-size:0.95rem; color:#F59E0B;">Why: Looker enforces metric definitions, row-level security, and audit trails. Direct BQ bypasses all of that.</p>
 </div>
 
 ---
