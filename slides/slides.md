@@ -1,544 +1,504 @@
 ---
-theme: none
-title: "From Local to Live in 5 Minutes"
+theme: default
+title: "How to build your own Replit Dashboard on Yalo via Claude Code!"
 info: "AI Friday — Replit Yalo Wizard"
-author: Gerardo Collante
+author: ENG. GERARDO COLLANTE [CBA, ARG]
 css: unocss
+transition: slide-up
 ---
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400&display=swap">
 
 <style>
-  :root {
-    --yalo-bg: #0F0F1C;
-    --yalo-card: #1A1A2E;
-    --yalo-border: #2A2A3E;
-    --yalo-text: #FFFFFF;
-    --yalo-muted: #888899;
-    --yalo-purple: #8B5CF6;
-    --yalo-pink: #EC4899;
-    --yalo-orange: #F59E0B;
-    --yalo-teal: #06B6D4;
-  }
   .slidev-layout {
-    background: var(--yalo-bg) !important;
-    color: var(--yalo-text) !important;
-    font-family: 'Inter', -apple-system, sans-serif !important;
-    padding: 3rem 4rem !important;
+    background-color: #111111 !important;
+    color: #FFFFFF !important;
+    font-family: 'Inter', sans-serif !important;
   }
-  .slidev-layout::after {
-    content: '';
-    position: absolute;
-    bottom: 24px;
-    left: 40px;
-    width: 60px;
-    height: 30px;
-    background-image: url('/yalo-white.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.4;
+  @keyframes levitate {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
   }
-  h1 {
-    font-family: 'Poppins', sans-serif !important;
-    font-size: 3.2rem !important;
-    font-weight: 700 !important;
-    line-height: 1.1 !important;
-    letter-spacing: -0.5px !important;
+  .animate-levitate {
+    animation: levitate 1.5s ease-in-out infinite;
   }
-  h2 {
-    font-family: 'Poppins', sans-serif !important;
-    font-size: 1.8rem !important;
-    font-weight: 600 !important;
-    color: #CCCCDD !important;
+  .glass-card {
+    @apply bg-white/5 border border-[#EEAE3D]/20 backdrop-blur-md rounded-2xl p-6 relative overflow-hidden transition-all hover:border-[#EEAE3D]/50 hover:bg-white/10;
   }
-  h3 {
-    font-family: 'Poppins', sans-serif !important;
-    font-size: 1.3rem !important;
-    font-weight: 600 !important;
+  .glass-pill {
+    @apply inline-block bg-white/10 border border-[#EEAE3D]/30 rounded-full px-5 py-1.5 text-sm font-medium text-white/90;
   }
-  p, li {
-    color: #AAAABC !important;
-    font-size: 1.1rem !important;
-    line-height: 1.7 !important;
-  }
-  code {
-    font-family: 'Fira Code', monospace !important;
-    background: var(--yalo-card) !important;
-    border: 1px solid var(--yalo-border) !important;
-    color: var(--yalo-teal) !important;
-    padding: 2px 8px !important;
-    border-radius: 6px !important;
-  }
-  pre {
-    font-family: 'Fira Code', monospace !important;
-    background: var(--yalo-card) !important;
-    border: 1px solid var(--yalo-border) !important;
-    border-radius: 12px !important;
-  }
-  .grad {
-    background: linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .grad-teal {
-    background: linear-gradient(135deg, #06B6D4, #8B5CF6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .card {
-    background: var(--yalo-card);
-    border: 1px solid var(--yalo-border);
-    border-radius: 16px;
-    padding: 1.5rem;
-  }
-  .metric-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #8B5CF6, #EC4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .metric-label {
-    color: var(--yalo-muted);
-    font-size: 0.9rem;
-    margin-top: 0.3rem;
-  }
-  .pill {
-    display: inline-block;
-    background: var(--yalo-card);
-    border: 1px solid var(--yalo-border);
-    border-radius: 999px;
-    padding: 6px 20px;
-    font-size: 0.85rem;
-    color: #CCCCDD;
-  }
-  .phase-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #8B5CF6, #EC4899);
-    color: white;
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-right: 12px;
-    flex-shrink: 0;
-  }
-  .phase-row {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    font-size: 1.1rem;
-    color: #CCCCDD;
-  }
-  .tag-auto {
-    display: inline-block;
-    background: rgba(6, 182, 212, 0.15);
-    color: #06B6D4;
-    padding: 2px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    margin-left: 8px;
-  }
-  .tag-manual {
-    display: inline-block;
-    background: rgba(236, 72, 153, 0.15);
-    color: #EC4899;
-    padding: 2px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    margin-left: 8px;
-  }
-  .tag-gate {
-    display: inline-block;
-    background: rgba(245, 158, 11, 0.15);
-    color: #F59E0B;
-    padding: 2px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    margin-left: 8px;
-    font-weight: 600;
-  }
-  table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background: var(--yalo-card);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--yalo-border);
-  }
-  th {
-    background: rgba(139, 92, 246, 0.1) !important;
-    color: #CCCCDD !important;
-    padding: 12px 16px !important;
-    font-size: 0.85rem !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  td {
-    padding: 12px 16px !important;
-    color: #AAAABC !important;
-    border-top: 1px solid var(--yalo-border) !important;
-  }
+  h1 { @apply font-['Poppins',sans-serif] text-5xl font-bold leading-tight tracking-tight; }
+  h2 { @apply font-['Poppins',sans-serif] text-3xl font-semibold; }
+  h3 { @apply font-['Poppins',sans-serif] text-xl font-semibold text-white; }
+  p, li { @apply text-white/70 text-lg leading-relaxed; }
+  .text-yalo-orange { @apply text-[#EEAE3D]; }
 </style>
 
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <img src="/yalo-white.svg" style="width:100px; margin-bottom:2rem; opacity:0.9;" />
-  <div class="pill" style="margin-bottom:2rem;">✨ AI Friday</div>
-  <h1>From Local to Live<br><span class="grad">in 5 Minutes.</span></h1>
-  <p style="margin-top:1.5rem; font-size:1.2rem;">Building and shipping a Claude Code plugin<br>for Replit onboarding.</p>
-  <p style="margin-top:2rem; color:#666677; font-size:0.95rem;">Gerardo Collante · April 2026</p>
+<Starfield />
+
+<div class="h-full flex flex-col justify-center relative z-10">
+  <img src="/yalo-logo.svg" style="filter: brightness(0) invert(1);" class="w-32 mb-8 opacity-90" />
+
+  <div>
+    <div class="glass-pill mb-8 inline-flex items-center justify-center whitespace-nowrap" v-motion :initial="{ y: 50, opacity: 0 }" :enter="{ y: 0, opacity: 1, transition: { type: 'spring', damping: 14 } }">
+      <div class="i-ph-magic-wand-duotone text-lg text-[#EEAE3D] mr-1.5 flex-shrink-0"></div>
+      <span class="leading-none relative top-[1px]">AI Friday</span>
+    </div>
+  </div>
+
+  <h1 v-motion :initial="{ y: 50, opacity: 0 }" :enter="{ y: 0, opacity: 1, transition: { delay: 200, type: 'spring', damping: 14 } }">
+    How to build your own<br>
+    <span class="text-yalo-orange">Replit Dashboard</span>
+  </h1>
+
+  <p class="mt-6 text-xl text-white/80" v-motion :initial="{ y: 50, opacity: 0 }" :enter="{ y: 0, opacity: 1, transition: { delay: 400 } }">
+    on Yalo via <img src="/claudecode-color.png" class="h-6 inline-block align-sub mx-1 animate-levitate" /> Claude Code!
+  </p>
+
+  <p class="mt-8 text-white/40 text-sm font-medium tracking-wide uppercase" v-motion :initial="{ y: 50, opacity: 0 }" :enter="{ y: 0, opacity: 1, transition: { delay: 600 } }">
+    ENG. GERARDO COLLANTE [CBA, ARG]
+  </p>
 </div>
 
 ---
+transition: fade
+---
 
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>The <span class="grad">Problem</span></h1>
-  <br>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
-    <div class="card">
-      <h3>🔒 Manual access</h3>
-      <p>Ping Mario on #ask-mario every time someone needs Replit access</p>
-    </div>
-    <div class="card">
-      <h3>📭 No onboarding</h3>
-      <p>No guide, no tutorial — people don't know where to start</p>
-    </div>
-    <div class="card">
-      <h3>😵 Lost developers</h3>
-      <p>Multiple people have lost access or can't find the workspace</p>
-    </div>
-    <div class="card">
-      <h3>📉 Low adoption</h3>
-      <p>Replit is approved but most Yaleros have never deployed an app</p>
-    </div>
+# The <span class="text-yalo-orange">Problem</span>
+
+<div class="grid grid-cols-2 gap-6 mt-8">
+  <div class="glass-card" v-click>
+    <div class="i-ph-lock-key-duotone text-4xl text-yalo-orange mb-4"></div>
+    <h3>Manual access</h3>
+    <p class="mt-2 text-base">Ping Mario on #ask-mario every time someone needs Replit access</p>
+  </div>
+  <div class="glass-card" v-click>
+    <div class="i-ph-question-duotone text-4xl text-yalo-orange mb-4"></div>
+    <h3>No onboarding</h3>
+    <p class="mt-2 text-base">No guide, no tutorial — people don't know where to start</p>
+  </div>
+  <div class="glass-card" v-click>
+    <div class="i-ph-warning-duotone text-4xl text-yalo-orange mb-4"></div>
+    <h3>Lost developers</h3>
+    <p class="mt-2 text-base">Multiple people have lost access or can't find the workspace</p>
+  </div>
+  <div class="glass-card" v-click>
+    <div class="i-ph-chart-line-up-duotone text-4xl text-yalo-orange mb-4"></div>
+    <h3>Low adoption</h3>
+    <p class="mt-2 text-base">Replit is approved but most Yaleros have never deployed an app</p>
   </div>
 </div>
 
 ---
-
-<div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; text-align:center;">
-  <div class="pill" style="margin-bottom:2rem;">💡 The Idea</div>
-  <h1>What if an agent could<br><span class="grad">do the whole thing for you?</span></h1>
-  <br>
-  <pre style="padding:1.2rem 2rem; font-size:1.3rem; margin-top:1rem;"><code>/yalo-replit:wizard</code></pre>
-  <p style="margin-top:1.5rem;">One command. Access check → project setup → deploy → live URL.</p>
-</div>
-
+transition: slide-left
+layout: center
+class: text-center
 ---
 
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>What We <span class="grad">Built</span></h1>
-  <br>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-    <div class="card">
-      <p style="color:#8B5CF6; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">Onboarding</p>
-      <h2 style="margin:0.5rem 0;">/yalo-replit:wizard</h2>
-      <p>7-phase flow from access check to live deployment. Handles GitHub, Replit config, and guides the user through every step.</p>
-    </div>
-    <div class="card">
-      <p style="color:#EC4899; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">Deploy</p>
-      <h2 style="margin:0.5rem 0;">/yalo-replit:deploy</h2>
-      <p>Triggered by "ready" or "deploy". Commits, pushes, tells you to click Redeploy. One command to go live.</p>
-    </div>
+<div class="glass-pill mb-8 mx-auto" v-motion :initial="{ scale: 0.8, opacity: 0 }" :enter="{ scale: 1, opacity: 1 }">💡 The Idea</div>
+
+<h1 v-motion :initial="{ y: 30, opacity: 0 }" :enter="{ y: 0, opacity: 1, transition: { delay: 200 } }">
+  What if an agent could<br><span class="text-yalo-orange">do the whole thing for you?</span>
+</h1>
+
+<div class="mt-8" v-click>
+  <pre class="inline-block px-8 py-4 bg-black/40 border border-yalo-orange/30 rounded-xl shadow-[0_0_30px_rgba(238,174,61,0.15)]"><code class="text-yalo-orange font-mono text-2xl">/yalo-replit:wizard</code></pre>
+</div>
+
+<p class="mt-8 text-xl" v-click>One command. Access check → project setup → deploy → live URL.</p>
+
+---
+transition: fade
+---
+
+# What We <span class="text-yalo-orange">Built</span>
+
+<div class="grid grid-cols-2 gap-6 mt-8">
+  <div class="glass-card">
+    <p class="text-yalo-orange text-xs font-bold uppercase tracking-widest mb-2 border-b border-yalo-orange/30 inline-block">Onboarding</p>
+    <h2 class="mb-4 mt-2">/yalo-replit:wizard</h2>
+    <p class="text-base text-white/70">7-phase flow from access check to live deployment. Handles GitHub, Replit config, and guides the user through every step.</p>
   </div>
-  <p style="margin-top:1.5rem; font-size:1rem;"><strong>Stack:</strong> SKILL.md — natively supports dropdowns, Slack MCP, Bash. No Python runtime needed.</p>
-</div>
-
----
-
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>Why <span class="grad-teal">SKILL.md</span> over Agent SDK</h1>
-  <br>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-    <div class="card" style="border-color: rgba(6,182,212,0.3);">
-      <h3 style="color:#06B6D4;">SKILL.md ✅</h3>
-      <p>Native AskUserQuestion dropdowns</p>
-      <p>Native MCP tools (Slack, GitHub)</p>
-      <p>Runs inside Claude Code</p>
-      <p>Zero runtime dependencies</p>
-      <p>Distributable as a plugin</p>
-    </div>
-    <div class="card" style="opacity: 0.5;">
-      <h3>Python Agent SDK</h3>
-      <p>Needs Python runtime</p>
-      <p>Needs separate packaging</p>
-      <p>Needs API keys</p>
-      <p>Overkill for a wizard flow</p>
-    </div>
+  <div class="glass-card">
+    <p class="text-yalo-orange text-xs font-bold uppercase tracking-widest mb-2 border-b border-yalo-orange/30 inline-block">Deploy</p>
+    <h2 class="mb-4 mt-2">/yalo-replit:deploy</h2>
+    <p class="text-base text-white/70">Triggered by "ready" or "deploy". Commits, pushes, tells you to click Redeploy. One command to go live.</p>
   </div>
 </div>
 
----
-
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>The <span class="grad">8 Phases</span></h1>
-  <br>
-  <div class="phase-row"><span class="phase-num">1</span> Access check → Slack to Mario if needed <span class="tag-auto">auto</span></div>
-  <div class="phase-row"><span class="phase-num">2</span> Project setup — template or from scratch <span class="tag-auto">auto</span></div>
-  <div class="phase-row"><span class="phase-num">3</span> Build together — iterate until happy <span class="tag-auto">auto</span></div>
-  <div class="phase-row"><span class="phase-num">4</span> Looker MCP setup — connector + skill install <span class="tag-auto">auto</span> <span class="tag-gate">mandatory if data</span></div>
-  <div class="phase-row"><span class="phase-num">5</span> GitHub repo or ZIP for non-GitHub users <span class="tag-auto">auto</span></div>
-  <div class="phase-row"><span class="phase-num">6</span> Replit config (.replit + replit.nix) <span class="tag-auto">auto</span></div>
-  <div class="phase-row"><span class="phase-num">7</span> Import to Replit <span class="tag-manual">browser</span></div>
-  <div class="phase-row"><span class="phase-num">8</span> Click Deploy <span class="tag-manual">browser</span></div>
+<div class="mt-6 flex items-center justify-center p-4 bg-white/5 border border-white/10 rounded-xl" v-click>
+  <div class="i-ph-stack-duotone text-2xl mr-3 text-yalo-orange"></div>
+  <p class="text-base m-0"><strong>Stack:</strong> SKILL.md — natively supports dropdowns, Slack MCP, Bash. No Python runtime needed.</p>
 </div>
 
 ---
+transition: fade
+---
 
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>Build <span class="grad">Together</span></h1>
-  <p style="font-size:1.2rem; margin:1rem 0;">The wizard doesn't just set up a pipeline. It helps you build your app.</p>
-  <br>
-  <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:1rem;">
-    <div class="card" style="text-align:center; padding:2rem 1rem;">
-      <div style="font-size:2rem;">📊</div>
-      <h3 style="margin-top:0.8rem;">Dashboard</h3>
-      <p style="font-size:0.9rem;">Charts, metrics, filters</p>
-      <p style="font-size:0.75rem; color:#F59E0B; margin-top:0.6rem; font-weight:600;">Data via Looker MCP · never BQ</p>
-    </div>
-    <div class="card" style="text-align:center; padding:2rem 1rem;">
-      <div style="font-size:2rem;">🤖</div>
-      <h3 style="margin-top:0.8rem;">AI Tool</h3>
-      <p style="font-size:0.9rem;">LLM-powered apps</p>
-    </div>
-    <div class="card" style="text-align:center; padding:2rem 1rem;">
-      <div style="font-size:2rem;">🛠️</div>
-      <h3 style="margin-top:0.8rem;">Internal Tool</h3>
-      <p style="font-size:0.9rem;">Forms & workflows</p>
-    </div>
-    <div class="card" style="text-align:center; padding:2rem 1rem;">
-      <div style="font-size:2rem;">💡</div>
-      <h3 style="margin-top:0.8rem;">Your Idea</h3>
-      <p style="font-size:0.9rem;">Anything you want</p>
-    </div>
-  </div>
-  <p style="margin-top:1.5rem;">Iterate: write code → preview → tweak → repeat → "looks great, let's publish"</p>
+# The <span class="text-yalo-orange">7 Phases</span>
+
+<div class="mt-4 flex flex-col relative gap-2">
+<div class="absolute left-[15px] top-4 h-[120px] w-0.5 bg-gradient-to-b from-[#EEAE3D] to-[#EEAE3D]/40 z-0"></div>
+
+<div class="flex items-center z-10" v-click>
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-[#EEAE3D] text-[#EEAE3D] flex items-center justify-center font-bold text-sm shadow-[0_0_12px_rgba(238,174,61,0.5)]">1</div>
+<div class="ml-6 glass-card !p-1.5 px-4 flex-grow flex items-center justify-between">
+<span class="text-sm font-medium">Access check → Slack to Mario if needed</span>
+<span class="text-[10px] px-2 py-[1px] bg-[#EEAE3D]/20 text-[#EEAE3D] rounded font-bold uppercase tracking-wider">auto</span>
+</div>
+</div>
+
+<div class="flex items-center z-10" v-click>
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-[#EEAE3D] text-[#EEAE3D] flex items-center justify-center font-bold text-sm shadow-[0_0_12px_rgba(238,174,61,0.5)]">2</div>
+<div class="ml-6 glass-card !p-1.5 px-4 flex-grow flex items-center justify-between">
+<span class="text-sm font-medium">Project setup — template or from scratch</span>
+<span class="text-[10px] px-2 py-[1px] bg-[#EEAE3D]/20 text-[#EEAE3D] rounded font-bold uppercase tracking-wider">auto</span>
+</div>
+</div>
+
+<div class="flex items-center z-10" v-click>
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-[#EEAE3D] text-[#EEAE3D] flex items-center justify-center font-bold text-sm shadow-[0_0_12px_rgba(238,174,61,0.5)]">3</div>
+<div class="ml-6 glass-card !p-1.5 px-4 flex-grow flex items-center justify-between">
+<span class="text-sm font-medium">Iterate until you're happy</span>
+<span class="text-[10px] px-2 py-[1px] bg-[#EEAE3D]/20 text-[#EEAE3D] rounded font-bold uppercase tracking-wider">auto</span>
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-6 mt-1 relative">
+
+<div class="flex flex-col gap-1.5 relative">
+<div class="text-center text-[10px] text-white/50 font-bold uppercase tracking-widest border-b border-white/10 pb-0.5 mb-1" v-click>Path A: With GitHub</div>
+<div class="absolute left-[15px] top-6 bottom-4 w-0.5 bg-gradient-to-b from-[#EEAE3D]/40 to-white/20 z-0"></div>
+
+<div class="flex items-center z-10" v-click>
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-[#EEAE3D] text-[#EEAE3D] flex items-center justify-center font-bold text-sm shadow-[0_0_8px_rgba(238,174,61,0.3)]">4</div>
+<div class="ml-3 glass-card !p-1.5 px-3 flex-grow flex items-center justify-between">
+<span class="text-[0.7rem] font-medium">Create GitHub Repo</span>
+</div>
+</div>
+
+<div class="flex items-center z-10" v-click>
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-[#EEAE3D] text-[#EEAE3D] flex items-center justify-center font-bold text-sm shadow-[0_0_8px_rgba(238,174,61,0.3)]">5</div>
+<div class="ml-3 glass-card !p-1.5 px-3 flex-grow flex items-center justify-between">
+<span class="text-[0.7rem] font-medium">Inject config (.replit + nix)</span>
+</div>
+</div>
+
+<div class="flex items-center z-10" v-click>
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-white/30 text-white/50 flex items-center justify-center font-bold text-sm">6</div>
+<div class="ml-3 glass-card !border-white/10 !bg-transparent !p-1.5 px-3 flex-grow flex items-center justify-between">
+<span class="text-[0.7rem] text-white/60 font-medium">Import to Replit</span>
+<span class="text-[8px] px-1 py-0.5 bg-white/10 text-white/40 rounded uppercase tracking-wider">manual</span>
+</div>
+</div>
+</div>
+
+<div class="flex flex-col gap-1.5 relative">
+<div class="text-center text-[10px] text-white/50 font-bold uppercase tracking-widest border-b border-white/10 pb-0.5 mb-1" v-click>Path B: Without GitHub</div>
+<div class="absolute left-[15px] top-6 bottom-4 w-0.5 bg-gradient-to-b from-white/30 to-white/10 z-0"></div>
+
+<div class="flex items-center z-10" v-click>
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-white/40 text-white/80 flex items-center justify-center font-bold text-sm">4</div>
+<div class="ml-3 glass-card !border-white/20 !p-1.5 px-3 flex-grow flex items-center justify-between">
+<span class="text-[0.7rem] text-white/80 font-medium">Generate local ZIP</span>
+</div>
+</div>
+
+<div class="flex items-center z-10" v-click>
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-white/40 text-white/80 flex items-center justify-center font-bold text-sm">5</div>
+<div class="ml-3 glass-card !border-white/20 !p-1.5 px-3 flex-grow flex items-center justify-between">
+<span class="text-[0.7rem] text-white/80 font-medium">Inject config (.replit + nix)</span>
+</div>
+</div>
+
+<div class="flex items-center z-10" v-click>
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-white/30 text-white/50 flex items-center justify-center font-bold text-sm">6</div>
+<div class="ml-3 glass-card !border-white/10 !bg-transparent !p-1.5 px-3 flex-grow flex items-center justify-between">
+<span class="text-[0.7rem] text-white/60 font-medium">Upload at replit.com</span>
+<span class="text-[8px] px-1 py-0.5 bg-white/10 text-white/40 rounded uppercase tracking-wider">manual</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flex items-center z-10 mt-1 mx-auto w-1/2" v-click>
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-[#EEAE3D] text-white flex items-center justify-center font-black text-lg shadow-[0_0_15px_rgba(238,174,61,0.6)]">7</div>
+<div class="ml-4 glass-card !border-[#EEAE3D]/50 !bg-[#EEAE3D]/10 !p-2 px-4 flex-grow flex items-center justify-between cursor-pointer">
+<span class="text-sm text-white font-bold uppercase tracking-widest">Click Deploy!</span>
+</div>
+</div>
 </div>
 
 ---
-
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>Data Policy — <span class="grad">Mandatory</span></h1>
-  <p style="font-size:1.2rem; margin:1.5rem 0 2rem;">All data flows through the Looker MCP. No direct BigQuery — ever.</p>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-    <div class="card" style="border-color: rgba(16, 185, 129, 0.4);">
-      <h3 style="color:#10B981;">✅ Do</h3>
-      <p><code>mcp__looker-mcp-toolbox__*</code> at build time</p>
-      <p><code>looker_sdk</code> + Replit Secrets for live runtime</p>
-      <p>CSV snapshots exported via Looker MCP</p>
-      <p>Static sources (external APIs, CSVs)</p>
-    </div>
-    <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
-      <h3 style="color:#EF4444;">🚫 Don't</h3>
-      <p><code>bq query</code> or the <code>bq</code> CLI</p>
-      <p><code>google-cloud-bigquery</code> SDK</p>
-      <p>Any direct BigQuery client</p>
-      <p>Hardcoded credentials in <code>app.py</code></p>
-    </div>
-  </div>
-  <p style="margin-top:1.5rem; font-size:0.95rem; color:#F59E0B;">Why: Looker enforces metric definitions, row-level security, and audit trails. Direct BQ bypasses all of that.</p>
-</div>
-
+transition: slide-up
 ---
 
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>Two Paths to <span class="grad">Replit</span></h1>
-  <br>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-    <div class="card" style="border-color: rgba(6,182,212,0.3);">
-      <h3 style="color:#06B6D4;">With GitHub</h3>
-      <p>Agent creates repo → pushes code</p>
-      <p>User imports from GitHub in Replit</p>
-      <p><code>git push</code> → Redeploy for updates</p>
-      <p style="color:#06B6D4; margin-top:1rem;">Best for ongoing projects</p>
-    </div>
-    <div class="card" style="border-color: rgba(236,72,153,0.3);">
-      <h3 style="color:#EC4899;">Without GitHub</h3>
-      <p>Agent creates ZIP file</p>
-      <p>User uploads at replit.com/import</p>
-      <p>Drag & drop for updates</p>
-      <p style="color:#EC4899; margin-top:1rem;">Best for quick one-offs</p>
-    </div>
+# Build <span class="text-yalo-orange">Together</span>
+
+<p class="text-xl mt-4 text-white/80">The wizard doesn't just set up a pipeline. It helps you build your app.</p>
+
+<div class="grid grid-cols-4 gap-4 mt-8">
+  <div class="glass-card text-center flex flex-col items-center !p-4 hover:-translate-y-2 transition-transform" v-click>
+    <div class="i-ph-squares-four-duotone text-5xl text-yalo-orange mb-3"></div>
+    <h3 class="text-lg">Dashboard</h3>
+    <p class="text-sm mt-2">Charts, metrics, filters</p>
+  </div>
+  <div class="glass-card text-center flex flex-col items-center !p-4 hover:-translate-y-2 transition-transform" v-click>
+    <div class="i-ph-brain-duotone text-5xl text-yalo-orange mb-3"></div>
+    <h3 class="text-lg">AI Tool</h3>
+    <p class="text-sm mt-2">LLM-powered apps</p>
+  </div>
+  <div class="glass-card text-center flex flex-col items-center !p-4 hover:-translate-y-2 transition-transform" v-click>
+    <div class="i-ph-clipboard-text-duotone text-5xl text-yalo-orange mb-3"></div>
+    <h3 class="text-lg">Internal Tool</h3>
+    <p class="text-sm mt-2">Forms & workflows</p>
+  </div>
+  <div class="glass-card text-center flex flex-col items-center !p-4 hover:-translate-y-2 transition-transform" v-click>
+    <div class="i-ph-lightbulb-duotone text-5xl text-yalo-orange mb-3"></div>
+    <h3 class="text-lg">Your Idea</h3>
+    <p class="text-sm mt-2">Anything you want</p>
   </div>
 </div>
 
----
-
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>Lessons <span class="grad">Learned</span></h1>
-  <p style="font-size:1.1rem; margin:1rem 0 2rem;">Things that broke along the way.</p>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-    <div class="card">
-      <h3>🐍 Python in Nix</h3>
-      <p><code>uv run</code> needs <code>python311Full</code> in the Nix env — it's not there by default.</p>
-    </div>
-    <div class="card">
-      <h3>📦 libstdc++ for numpy</h3>
-      <p>numpy/pandas need <code>pkgs.stdenv.cc.cc.lib</code> + <code>LD_LIBRARY_PATH</code>.</p>
-    </div>
-    <div class="card">
-      <h3>🔀 Replit modifies your files</h3>
-      <p>Always <code>git pull --rebase</code> before pushing. Replit adds workflows and ports config.</p>
-    </div>
-    <div class="card">
-      <h3>📋 Ship Replit's own config</h3>
-      <p>Copy the exact <code>.replit</code> that Replit generates. Don't fight it.</p>
-    </div>
-  </div>
+<div class="mt-8 p-4 bg-yalo-orange/5 border border-yalo-orange/20 rounded-xl text-center" v-click>
+  <p class="m-0 text-white flex items-center justify-center">
+    <div class="i-ph-arrows-clockwise-duotone mr-2 text-2xl text-yalo-orange"></div> Iteration Loop:
+    <span class="mx-2 font-mono text-sm opacity-80 text-yalo-orange">write code → preview → tweak → repeat → "looks great"</span>
+  </p>
 </div>
 
 ---
-
-<div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; text-align:center;">
-  <div class="pill" style="margin-bottom:2rem;">🎬 Live Demo</div>
-  <h1>Let's build and deploy<br><span class="grad">something real.</span></h1>
-  <br>
-  <pre style="padding:1.2rem 2rem; font-size:1.3rem;"><code>/yalo-replit:wizard</code></pre>
-  <br>
-  <p style="font-size:1.1rem;">Access check → template → dashboard → iterate → publish → live URL</p>
-</div>
-
+transition: fade
 ---
 
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>The Deploy <span class="grad-teal">Cycle</span></h1>
-  <p style="font-size:1.2rem; margin:1rem 0 2rem;">After initial setup, the daily flow is:</p>
-  <div class="card" style="text-align:center; padding:2rem;">
-    <p style="font-size:1.3rem; color:#FFFFFF;">
-      Edit <code>app.py</code> → say <code>"ready"</code> → agent pushes → click <strong>Redeploy</strong> → live
-    </p>
+# Data via <span class="text-yalo-orange">Looker MCP</span>
+
+<p class="text-xl mt-4 text-white/80">Your dashboard needs data — but Replit is a public runtime. Credentials can't live there.</p>
+
+<div class="grid grid-cols-2 gap-6 mt-8">
+  <div class="glass-card border-red-500/30" v-click>
+    <div class="i-ph-prohibit-duotone text-4xl text-red-400 mb-3"></div>
+    <h3 class="text-red-300">Direct BigQuery — NO</h3>
+    <p class="mt-2 text-base">Service account keys in a Repl. Raw SQL without governance. Every dashboard re-inventing joins.</p>
   </div>
-  <br>
-  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
-    <div class="card" style="text-align:center;">
-      <div class="metric-value">5</div>
-      <div class="metric-label">phases automated</div>
-    </div>
-    <div class="card" style="text-align:center;">
-      <div class="metric-value">2</div>
-      <div class="metric-label">browser steps (one-time)</div>
-    </div>
-    <div class="card" style="text-align:center;">
-      <div class="metric-value">1</div>
-      <div class="metric-label">click per deploy</div>
-    </div>
+  <div class="glass-card border-[#EEAE3D]/50" v-click>
+    <div class="i-ph-database-duotone text-4xl text-yalo-orange mb-3"></div>
+    <h3 class="text-yalo-orange">Looker MCP — YES</h3>
+    <p class="mt-2 text-base">Governed semantic layer. Auth handled once. The <code class="text-yalo-orange">looker-analytics</code> skill queries Explores for you.</p>
   </div>
 </div>
 
----
-
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>How to <span class="grad">Install</span></h1>
-  <br>
-  <div class="card" style="padding:2rem;">
-
-```bash
-# One time setup
-/plugin marketplace add GerardoYalo/replit-yalo-wizard
-/plugin install yalo-replit
-/reload-plugins
-```
-
-  </div>
-  <br>
-  <div class="card" style="padding:2rem;">
-
-```bash
-# Run the wizard
-/yalo-replit:wizard
-
-# Deploy updates
-/yalo-replit:deploy
-```
-
-  </div>
+<div class="mt-6 p-4 bg-yalo-orange/5 border border-yalo-orange/20 rounded-xl" v-click>
+  <p class="m-0 flex items-center text-white">
+    <div class="i-ph-shield-check-duotone text-2xl mr-2 text-yalo-orange"></div>
+    Phase 2c of the wizard walks you through this — the setup guide is in Notion.
+  </p>
 </div>
 
 ---
+transition: fade
+---
 
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1>Build Your Own <span class="grad">Plugin</span></h1>
-  <p style="font-size:1.1rem; margin:1rem 0 2rem;">This same pattern works for any internal tool.</p>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-    <div class="card">
-      <h3>🎓 Onboarding wizards</h3>
-      <p>Replit, GitHub, Datadog, any tool</p>
+# Looker MCP <span class="text-yalo-orange">Setup</span>
+
+<p class="text-base mt-4 text-white/70">One-time setup — the wizard runs you through all of this in Phase 2c.</p>
+
+<div class="flex flex-col gap-3 mt-6">
+  <div class="glass-card !p-3 flex items-center" v-click>
+    <div class="flex-shrink-0 w-9 h-9 rounded-full bg-yalo-orange/10 border border-yalo-orange/50 text-yalo-orange flex items-center justify-center font-bold mr-4">1</div>
+    <div class="flex-grow">
+      <h3 class="text-base m-0">Download the MCP bundle</h3>
+      <p class="text-sm m-0 mt-1"><code class="text-yalo-orange">looker-mcp-connector.mcpb</code> — drag into Claude Code to install the connector</p>
     </div>
-    <div class="card">
-      <h3>📊 Data dashboards</h3>
-      <p>Looker MCP → Streamlit → Replit → shareable URL</p>
+  </div>
+
+  <div class="glass-card !p-3 flex items-center" v-click>
+    <div class="flex-shrink-0 w-9 h-9 rounded-full bg-yalo-orange/10 border border-yalo-orange/50 text-yalo-orange flex items-center justify-center font-bold mr-4">2</div>
+    <div class="flex-grow">
+      <h3 class="text-base m-0">Install the governance skill</h3>
+      <p class="text-sm m-0 mt-1"><code class="text-yalo-orange">looker-analytics-0.5.2.skill</code> — teaches Claude how to query Looker properly</p>
     </div>
-    <div class="card">
-      <h3>💬 Slack bots</h3>
-      <p>Automated messages via MCP</p>
-    </div>
-    <div class="card">
-      <h3>⚡ Code generators</h3>
-      <p>Templates, scaffolding, boilerplate</p>
+  </div>
+
+  <div class="glass-card !p-3 flex items-center" v-click>
+    <div class="flex-shrink-0 w-9 h-9 rounded-full bg-yalo-orange/10 border border-yalo-orange/50 text-yalo-orange flex items-center justify-center font-bold mr-4">3</div>
+    <div class="flex-grow">
+      <h3 class="text-base m-0">Get Looker API credentials</h3>
+      <p class="text-sm m-0 mt-1">Client ID + Secret — request in <code class="text-yalo-orange">#ask-mario</code> if you don't have them yet</p>
     </div>
   </div>
 </div>
 
----
-
-<div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
-  <h1><span class="grad">Key Takeaways</span></h1>
-  <br>
-  <div style="display:flex; flex-direction:column; gap:1rem;">
-    <div class="card" style="display:flex; align-items:center; gap:1rem;">
-      <span class="phase-num">1</span>
-      <p style="margin:0;"><strong>SKILL.md > Agent SDK</strong> for wizard-style flows in Claude Code</p>
-    </div>
-    <div class="card" style="display:flex; align-items:center; gap:1rem;">
-      <span class="phase-num">2</span>
-      <p style="margin:0;"><strong>Plugins are easy to distribute</strong> — marketplace + 2 install commands</p>
-    </div>
-    <div class="card" style="display:flex; align-items:center; gap:1rem;">
-      <span class="phase-num">3</span>
-      <p style="margin:0;"><strong>The wizard should own the flow</strong> — do the work, don't just instruct</p>
-    </div>
-    <div class="card" style="display:flex; align-items:center; gap:1rem;">
-      <span class="phase-num">4</span>
-      <p style="margin:0;"><strong>Be honest about manual steps</strong> — set expectations upfront</p>
-    </div>
-    <div class="card" style="display:flex; align-items:center; gap:1rem;">
-      <span class="phase-num">5</span>
-      <p style="margin:0;"><strong>Ship the config Replit expects</strong> — don't fight the platform</p>
-    </div>
+<div class="mt-5 glass-card border-yalo-orange/40 !py-3 flex items-center justify-center" v-click>
+  <div class="i-ph-notion-logo-duotone text-3xl mr-3 text-yalo-orange"></div>
+  <div>
+    <p class="text-xs m-0 text-white/60 uppercase tracking-widest font-bold">Full guide on Notion</p>
+    <p class="text-sm m-0 mt-1 text-yalo-orange font-mono break-all">notion.so/yalo/How-to-Set-Up-Looker-Analytics-in-Claude-Cowork-325d53382b23812496b5ef272fb4c26d</p>
   </div>
 </div>
 
 ---
+transition: slide-up
+---
 
-<div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; text-align:center;">
-  <h1>Questions? <span class="grad">🤔</span></h1>
-  <br>
-  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; margin-top:2rem;">
-    <div class="card" style="text-align:center;">
-      <p style="color:var(--yalo-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Repo</p>
-      <p style="color:#06B6D4;">GerardoYalo/<br>replit-yalo-wizard</p>
+# Two Paths to <span class="text-yalo-orange">Replit</span>
+
+<div class="grid grid-cols-2 gap-8 mt-10">
+  <div class="glass-card hover:border-[#111111]/50 border-white/30 transition-colors" v-click>
+    <div class="bg-white/5 border border-white/10 rounded-xl text-center mb-6 py-4">
+      <div class="i-ph-github-logo-fill text-6xl text-white mx-auto"></div>
     </div>
-    <div class="card" style="text-align:center;">
-      <p style="color:var(--yalo-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Replit Access</p>
-      <p style="color:#EC4899;">#ask-mario</p>
+    <h3 class="text-white mb-4 text-center">With GitHub</h3>
+    <ul class="space-y-3 text-base">
+      <li class="flex items-center"><div class="i-ph-arrow-right-bold text-white mr-2"></div> Agent creates repo, pushes code</li>
+      <li class="flex items-center"><div class="i-ph-arrow-right-bold text-white mr-2"></div> User imports repo in Replit</li>
+      <li class="flex items-center"><div class="i-ph-arrow-right-bold text-white mr-2"></div> `git push` → Redeploy for updates</li>
+    </ul>
+    <div class="mt-6 pt-4 border-t border-white/10 text-center text-white/50 font-medium text-sm uppercase">Best for ongoing projects</div>
+  </div>
+
+  <div class="glass-card hover:border-yalo-orange/50 transition-colors" v-click>
+    <div class="bg-[#EEAE3D]/10 border border-[#EEAE3D]/30 rounded-xl text-center mb-6 py-4">
+      <div class="i-ph-file-zip-duotone text-6xl text-yalo-orange mx-auto"></div>
     </div>
-    <div class="card" style="text-align:center;">
-      <p style="color:var(--yalo-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Ticket</p>
-      <p style="color:#8B5CF6;">YI-3728</p>
-    </div>
+    <h3 class="text-yalo-orange mb-4 text-center">Without GitHub</h3>
+    <ul class="space-y-3 text-base">
+      <li class="flex items-center"><div class="i-ph-arrow-right-bold text-yalo-orange mr-2"></div> Agent creates ZIP file locally</li>
+      <li class="flex items-center"><div class="i-ph-arrow-right-bold text-yalo-orange mr-2"></div> User uploads at replit.com/import</li>
+      <li class="flex items-center"><div class="i-ph-arrow-right-bold text-yalo-orange mr-2"></div> Drag & drop for updates</li>
+    </ul>
+    <div class="mt-6 pt-4 border-t border-yalo-orange/20 text-center text-yalo-orange font-medium text-sm uppercase">Best for quick one-offs</div>
   </div>
 </div>
 
 ---
+transition: slide-up
+layout: center
+class: text-center
+---
 
-<div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; text-align:center;">
-  <h1 style="font-size:4rem;"><span class="grad">Thanks!</span> 🚀</h1>
-  <br>
-  <p style="font-size:1.2rem;">Built entirely with Claude Code — including this presentation.</p>
+<div class="glass-pill mb-8 mx-auto border-yalo-orange text-yalo-orange bg-yalo-orange/10 transition-colors">🎬 Live Demo</div>
+
+<h1 class="mb-8">Time to start the<br><span class="text-yalo-orange">Live Demo.</span></h1>
+
+<div class="px-8 py-5 glass-card inline-block min-w-[500px] border-yalo-orange/30 shadow-[0_0_50px_rgba(238,174,61,0.15)] overflow-hidden text-left" v-motion :initial="{ scale: 0.9, opacity: 0 }" :enter="{ scale: 1, opacity: 1, transition: { delay: 300 } }">
+  <div class="font-mono text-xl text-white/90 font-medium">
+    <span class="text-white/40">❯</span>
+    <span class="text-yalo-orange font-bold">/yalo-replit:</span><span class="text-white/70">wizard</span>
+    <span class="inline-block w-2 bg-yalo-orange h-[1.1rem] align-middle ml-1 animate-pulse mb-1"></span>
+  </div>
+</div>
+
+<p class="mt-10 text-white/50 flex flex-wrap items-center justify-center space-x-2 text-sm uppercase tracking-widest font-bold" v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1, transition: { delay: 600 } }">
+  <span>Access check</span> <span class="text-yalo-orange mx-2">→</span>
+  <span>template</span> <span class="text-yalo-orange mx-2">→</span>
+  <span>dashboard</span> <span class="text-yalo-orange mx-2">→</span>
+  <span>iterate</span> <span class="text-yalo-orange mx-2">→</span>
+  <span>publish</span>
+</p>
+
+---
+transition: slide-up
+---
+
+# The Deploy <span class="text-yalo-orange">Cycle</span>
+
+<p class="text-xl my-6">After the one-time initial setup, the daily flow is incredibly simple:</p>
+
+<div class="glass-card text-center !py-8 border-yalo-orange/30 bg-[#EEAE3D]/5" v-click>
+  <p class="text-2xl font-medium tracking-wide flex items-center justify-center space-x-4">
+    <span>Edit `app.py`</span>
+    <span class="i-ph-arrow-right-bold text-yalo-orange opacity-50"></span>
+    <span>say <span class="text-yalo-orange bg-black/60 px-3 py-1.5 rounded-lg border border-yalo-orange/30">"ready"</span></span>
+    <span class="i-ph-arrow-right-bold text-yalo-orange opacity-50"></span>
+    <span>agent pushes</span>
+    <span class="i-ph-arrow-right-bold text-yalo-orange opacity-50"></span>
+    <span>click <strong class="bg-black/60 px-3 py-1.5 rounded-lg text-white border border-white/30">Redeploy</strong></span>
+    <span class="i-ph-arrow-right-bold text-yalo-orange opacity-50"></span>
+    <span class="text-yalo-orange font-bold underline decoration-yalo-orange/50 underline-offset-4">Live</span>
+  </p>
+</div>
+
+<div class="grid grid-cols-3 gap-6 mt-10">
+  <div class="glass-card text-center flex flex-col items-center justify-center p-8" v-click>
+    <div class="text-7xl font-black text-yalo-orange">5</div>
+    <div class="mt-4 text-sm text-white/50 font-bold uppercase tracking-widest">Phases Automated</div>
+  </div>
+  <div class="glass-card text-center flex flex-col items-center justify-center p-8" v-click>
+    <div class="text-7xl font-black text-yalo-orange">2</div>
+    <div class="mt-4 text-sm text-white/50 font-bold uppercase tracking-widest">Browser Steps</div>
+  </div>
+  <div class="glass-card text-center flex flex-col items-center justify-center p-8" v-click>
+    <div class="text-7xl font-black text-yalo-orange">1</div>
+    <div class="mt-4 text-sm text-white/50 font-bold uppercase tracking-widest">Click per Deploy</div>
+  </div>
+</div>
+
+---
+transition: fade
+---
+
+# How to <span class="text-yalo-orange">Install</span>
+
+<div class="flex flex-col gap-6 mt-8">
+  <div class="glass-card" v-click>
+    <h3 class="mb-4 flex items-center"><div class="i-ph-download-simple-duotone text-3xl text-yalo-orange mr-2"></div> One-time setup</h3>
+    <pre class="bg-black/60 border border-white/10 rounded-xl p-4 !text-sm leading-relaxed overflow-x-auto"><code class="text-white/80"><span class="text-white/30 block mb-2"># Inside Claude Code</span><span class="text-white/50">/plugin</span> <span class="text-white">marketplace add GerardoYalo/replit-yalo-wizard</span><br><span class="text-white/50">/plugin</span>                <span class="text-white/30">← select and enable yalo-replit</span><br><span class="text-white/50">/reload-plugins</span></code></pre>
+  </div>
+
+  <div class="glass-card border-yalo-orange/30 bg-[#EEAE3D]/5" v-click>
+    <h3 class="mb-4 flex items-center text-yalo-orange"><div class="i-ph-play-circle-duotone text-3xl text-yalo-orange mr-2"></div> Usage</h3>
+    <pre class="bg-black/60 border border-white/10 rounded-xl p-4 !text-sm leading-relaxed overflow-x-auto"><code class="text-white/80"><span class="text-white/30 block mb-2"># Start building something</span><span class="text-yalo-orange font-bold">/yalo-replit:wizard</span><br><br><span class="text-white/30 block mt-4 mb-2"># Deploy your updates</span><span class="text-yalo-orange font-bold">/yalo-replit:deploy</span></code></pre>
+  </div>
+</div>
+
+<div class="mt-8 glass-card border flex items-center justify-center font-medium opacity-80" v-click>
+  <div class="i-ph-info-duotone mr-2 text-2xl text-yalo-orange"></div> Works entirely on your local machine — no extra runtime required.
+</div>
+
+---
+transition: fade
+---
+
+# <span class="text-yalo-orange">Key Takeaways</span>
+
+<div class="mt-8 flex flex-col gap-4">
+  <div class="glass-card !p-4 flex items-center" v-click>
+    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-yalo-orange/10 border border-yalo-orange/50 text-yalo-orange flex items-center justify-center font-bold text-lg mr-5 shadow-[0_0_15px_rgba(238,174,61,0.2)]">1</div>
+    <p class="m-0 text-lg"><strong class="text-white">SKILL.md > Agent SDK</strong> for wizard-style sequential flows in Claude Code</p>
+  </div>
+
+  <div class="glass-card !p-4 flex items-center" v-click>
+    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-yalo-orange/10 border border-yalo-orange/50 text-yalo-orange flex items-center justify-center font-bold text-lg mr-5 shadow-[0_0_15px_rgba(238,174,61,0.2)]">2</div>
+    <p class="m-0 text-lg"><strong class="text-white">Plugins are easy to distribute</strong> — marketplace + 2 install commands</p>
+  </div>
+
+  <div class="glass-card !p-4 flex items-center" v-click>
+    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-yalo-orange/10 border border-yalo-orange/50 text-yalo-orange flex items-center justify-center font-bold text-lg mr-5 shadow-[0_0_15px_rgba(238,174,61,0.2)]">3</div>
+    <p class="m-0 text-lg"><strong class="text-white">The wizard should own the flow</strong> — do the active work, don't just instruct</p>
+  </div>
+
+  <div class="glass-card !p-4 flex items-center" v-click>
+    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-yalo-orange/10 border border-yalo-orange/50 text-yalo-orange flex items-center justify-center font-bold text-lg mr-5 shadow-[0_0_15px_rgba(238,174,61,0.2)]">4</div>
+    <p class="m-0 text-lg"><strong class="text-white">Governed data via MCP</strong> — no credentials on Replit, no raw SQL</p>
+  </div>
+
+  <div class="glass-card !p-4 flex items-center" v-click>
+    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-yalo-orange/10 border border-yalo-orange/50 text-yalo-orange flex items-center justify-center font-bold text-lg mr-5 shadow-[0_0_15px_rgba(238,174,61,0.2)]">5</div>
+    <p class="m-0 text-lg"><strong class="text-white">Ship the config Replit expects</strong> — embrace the platform</p>
+  </div>
+</div>
+
+---
+layout: center
+class: text-center
+---
+
+<h1 class="text-8xl mb-8">Questions? <span class="text-yalo-orange">🤔</span></h1>
+
+<div v-click class="absolute inset-0 bg-[#111111] z-50 flex flex-col items-center justify-center">
+  <Fireworks />
+
+  <h1 class="text-[9rem] font-black leading-none bg-gradient-to-br from-yalo-orange via-pink-400 to-yalo-orange bg-clip-text text-transparent filter drop-shadow-[0_0_60px_rgba(238,174,61,0.6)] mb-8" v-motion :initial="{ scale: 0.5, opacity: 0 }" :enter="{ scale: 1, opacity: 1, transition: { type: 'spring', damping: 10 } }">
+    THANK YOU!
+  </h1>
 </div>
