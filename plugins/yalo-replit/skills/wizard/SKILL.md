@@ -144,7 +144,16 @@ Ask via AskUserQuestion:
 Based on their answer, help them build it:
 - Write the `app.py` code for them
 - Add dependencies with `uv add <pkg>`
-- If they need data (BQ, CSV, API), help them export/connect it
+- **Data access — always via Looker, never direct BigQuery.** Use the Looker MCP connector (`mcp__looker-mcp-toolbox__*`) for every discovery and query step while building. Do not use `bq`, the `google-cloud-bigquery` SDK, or any direct BigQuery client. Static sources (CSV, external API) are fine.
+- Before querying Looker for the first time, run **Phase 2c** to verify the MCP connector and `looker-analytics` skill are installed. Skip 2c for AI/LLM, Internal tool, or custom ideas that don't need Looker data.
+- If the app needs Looker data at runtime, ask via AskUserQuestion:
+  - question: "Does your dashboard need fresh data every load, or is a snapshot enough?"
+  - header: "Data freshness"
+  - options:
+    - label: "📡 Live — query Looker on each load" — description: "Uses Looker API via looker_sdk; needs credentials in Replit Secrets"
+    - label: "📸 Snapshot — freeze current data" — description: "Export once via Looker MCP to a CSV bundled with the app"
+  - **Live branch:** run `uv add looker_sdk`. In `app.py`, initialize with `looker_sdk.init40()` reading from env vars (`LOOKERSDK_BASE_URL`, `LOOKERSDK_CLIENT_ID`, `LOOKERSDK_CLIENT_SECRET`, `LOOKERSDK_API_VERSION=4.0`). After deploy, tell the user to set those 4 values in Replit → **Secrets**. Never hardcode credentials.
+  - **Snapshot branch:** use `mcp__looker-mcp-toolbox__query_looker` to pull rows, save as `data/<name>.csv` inside the project, and load with `pd.read_csv()` in `app.py`. Document the snapshot date in a comment so the user knows when to refresh.
 - Run locally with `uv run streamlit run app.py --server.headless true` and tell the user: "👉 Open http://localhost:8501 in your browser to see the changes."
 - Iterate: ask if they like it, what to change, what to add
 - Keep going until they say they're happy
@@ -158,6 +167,111 @@ Use AskUserQuestion after each iteration:
   - label: "➕ Add more features"
 
 When they choose "Looks great, let's publish" → continue to Phase 3.
+
+---
+
+## Phase 2c — Looker access setup (only if the app needs Looker data)
+
+**Skip this phase** unless the user picked "📊 Dashboard with data" in Phase 2b. AI/LLM, Internal tool, and custom ideas without Looker data don't need any of this.
+
+**Goal:** ensure the Looker MCP connector and `looker-analytics` skill are installed in the user's Claude Code so build-time queries + snapshot exports work.
+
+### Step 0 — Check current state (silent)
+
+Run:
+```bash
+claude mcp list 2>/dev/null | grep looker-mcp-toolbox
+test -f "$HOME/.claude/skills/looker-analytics/SKILL.md" && echo "skill_ok" || echo "skill_missing"
+```
+
+- If both present and `claude mcp list` shows `✓ Connected` → skip to Phase 3.
+- If either missing → continue below.
+
+### Step 1 — Download the two files from the Notion guide
+
+Tell the user:
+
+"To let your dashboard pull data from Looker, you need two files. Both live in this Notion guide — download them now:
+
+👉 https://www.notion.so/yalo/How-to-Set-Up-Looker-Analytics-in-Claude-Cowork-325d53382b23812496b5ef272fb4c26d
+
+1. `looker-mcp-connector.mcpb` — the MCP connector bundle
+2. `looker-analytics-<version>.skill` — the governance skill that teaches me how to use Looker well
+
+Save both to `~/Downloads`."
+
+Wait via AskUserQuestion:
+- question: "Did you download both files to ~/Downloads?"
+- header: "Downloads"
+- options:
+  - label: "✅ Both downloaded"
+  - label: "⏳ Having trouble"
+
+### Step 2 — Looker API credentials
+
+Ask via AskUserQuestion:
+- question: "Do you already have Looker API credentials (Client ID + Secret)?"
+- header: "Looker creds"
+- options:
+  - label: "✅ Yes, I have them"
+  - label: "❌ No, I need them"
+
+**Branch: ❌ No**
+Ask for the user's full name (free text), then send via `mcp__slack__send_message` to `#ask-mario`:
+> "Hi Mario! [NAME] needs Looker API credentials for the Claude Code integration. Can you set them up? Thanks! 🙏"
+
+Tell them: "✅ I let Mario know. Come back once you have the Client ID and Secret — then re-invoke the wizard." **Stop here.**
+
+**Branch: ✅ Yes**
+Ask for the Client ID and Client Secret (free text, one at a time). Treat as sensitive — don't echo them back in chat output.
+
+### Step 3 — Install the MCP server
+
+Extract the bundle to a stable path:
+```bash
+mkdir -p ~/.claude/mcp-servers
+unzip -o ~/Downloads/looker-mcp-connector.mcpb -d ~/.claude/mcp-servers/looker-mcp-toolbox
+```
+
+Register with Claude Code (replace `<CLIENT_ID>` / `<CLIENT_SECRET>` with the user's values — do not print them back):
+```bash
+claude mcp add looker-mcp-toolbox -s user \
+  -e LOOKER_BASE_URL=https://yalochat.looker.com \
+  -e LOOKER_CLIENT_ID=<CLIENT_ID> \
+  -e LOOKER_CLIENT_SECRET=<CLIENT_SECRET> \
+  -e LOOKER_PROJECT=arched-photon-194421 \
+  -- node "$HOME/.claude/mcp-servers/looker-mcp-toolbox/server/index.js"
+```
+
+Verify:
+```bash
+claude mcp list | grep looker-mcp-toolbox
+```
+Expect: `looker-mcp-toolbox: ... ✓ Connected`.
+
+If not connected → credentials are likely wrong. Ask the user to re-check them in the Slack thread from Mario and retry Step 3.
+
+### Step 4 — Install the `looker-analytics` skill
+
+```bash
+mkdir -p ~/.claude/skills
+unzip -o ~/Downloads/looker-analytics-*.skill -d ~/.claude/skills/
+```
+
+Verify:
+```bash
+test -f "$HOME/.claude/skills/looker-analytics/SKILL.md" && echo "OK" || echo "Missing"
+```
+
+### Step 5 — Restart Claude Code
+
+Tell the user:
+
+"🔄 **Restart Claude Code now** — exit this session (Ctrl+C) and run `claude` again. The 15 Looker tools and the `looker-analytics` governance skill only load on startup.
+
+When you're back, say **'continue'** and I'll pick up at the dashboard build in Phase 2b."
+
+**Stop here.** The user must restart before Looker tools become callable. When they return, resume Phase 2b with the live/snapshot question.
 
 ---
 

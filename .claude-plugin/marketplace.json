@@ -13,7 +13,7 @@
       "name": "yalo-replit",
       "source": "./plugins/yalo-replit",
       "description": "Onboard any Yalo employee to Replit — handles access request automatically",
-      "version": "3.0.0"
+      "version": "3.1.0"
     }
   ]
 }
