@@ -1,3 +1,4 @@
 node_modules/
 .DS_Store
 slides/dist/
+slides/package-lock.json
