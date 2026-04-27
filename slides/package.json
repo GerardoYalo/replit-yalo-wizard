@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "slidev",
     "build": "slidev build",
-    "export": "slidev export"
+    "export": "slidev export --with-clicks --dark --timeout 60000 --output replit-yalo-wizard.pdf"
   },
   "dependencies": {
     "@slidev/cli": "^52.0.0",
